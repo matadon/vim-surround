@@ -483,6 +483,15 @@ function! s:changesurround(...) " {{{1
   call s:dosurround(a,b,a:0 && a:1)
 endfunction " }}}1
 
+function! s:changeSurroundUsingCharacterUnderCursor() " {{{1
+  let a = getline(".")[col(".")-1]
+  let b = s:inputreplacement()
+  if b == ""
+    return s:beep()
+  endif
+  call s:dosurround(a,b)
+endfunction " }}}1
+
 function! s:opfunc(type, ...) abort " {{{1
   if a:type ==# 'setup'
     let &opfunc = matchstr(expand('<sfile>'), '<SNR>\w\+$')
@@ -578,6 +587,7 @@ nnoremap <silent> <Plug>SurroundRepeat .
 nnoremap <silent> <Plug>Dsurround  :<C-U>call <SID>dosurround(<SID>inputtarget())<CR>
 nnoremap <silent> <Plug>Csurround  :<C-U>call <SID>changesurround()<CR>
 nnoremap <silent> <Plug>CSurround  :<C-U>call <SID>changesurround(1)<CR>
+nnoremap <silent> <Plug>CSurroundUsingCharacterUnderCursor  :<C-U>call <SID>changeSurroundUsingCharacterUnderCursor()<CR>
 nnoremap <expr>   <Plug>Yssurround '^'.v:count1.<SID>opfunc('setup').'g_'
 nnoremap <expr>   <Plug>YSsurround <SID>opfunc2('setup').'_'
 nnoremap <expr>   <Plug>Ysurround  <SID>opfunc('setup')
@@ -589,8 +599,9 @@ inoremap <silent> <Plug>ISurround  <C-R>=<SID>insert(1)<CR>
 
 if !exists("g:surround_no_mappings") || ! g:surround_no_mappings
   nmap ds  <Plug>Dsurround
-  nmap cs  <Plug>Csurround
+  " nmap cs  <Plug>Csurround
   nmap cS  <Plug>CSurround
+  nmap cs  <Plug>CSurroundUsingCharacterUnderCursor
   nmap ys  <Plug>Ysurround
   nmap yS  <Plug>YSurround
   nmap yss <Plug>Yssurround
